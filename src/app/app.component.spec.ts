@@ -1,10 +1,19 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { first } from 'rxjs';
 
 describe('AppComponent', () => {
-  beforeEach(() => TestBed.configureTestingModule({
+
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
+  beforeEach(() => {TestBed.configureTestingModule({
     imports: [AppComponent]
-  }));
+  }),
+   fixture = TestBed.createComponent(AppComponent);
+   component = fixture.componentInstance;
+   fixture.detectChanges();
+  });
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);
@@ -12,16 +21,26 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'todo-list' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('todo-list');
+  //teste do @Input
+  it('should set @Imput property correctly', () => {
+     component.projectName = 'Testing Angular with Jest';
+
+     fixture.detectChanges();
+
+     expect(component.projectName).toEqual('Testing Angular with Jest')
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('todo-list app is running!');
-  });
+  //teste @Output e @Input
+  it('should emit event with @Output decorator correctly', () =>{
+     component.projectName = 'Testing my Angular application';
+
+     component.outputEvent.pipe(
+      first()
+     ).subscribe({
+      next: (event) => {
+        expect(event).toEqual('Testing my Angular application');
+        component.handleEmitEvent()
+      }
+     })
+  })
 });
